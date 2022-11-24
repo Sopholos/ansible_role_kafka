@@ -28,6 +28,12 @@
   tags:
     - kafka_user
 
+- name: install | dependencies
+  apt:
+    update_cache: yes
+    name:
+      - default-jre
+
 - name: Check if Kafka has already been downloaded and unpacked
   stat:
     path: '{{ kafka_dir }}_{{ kafka_scala_version }}-{{ kafka_version }}'
@@ -114,6 +120,18 @@
   tags:
     - kafka_dirs
 
+- name: Template file to detect scale up/down
+  template:
+    src: controller.quorum.voters.j2
+    dest: '{{ kafka_dir }}/config/kraft/controller.quorum.voters'
+    group: '{{ kafka_group }}'
+    owner: '{{ kafka_user }}'
+    mode: 0644
+  notify:
+    - Quorum cleanup
+  tags:
+    - kafka_config
+
 - name: Template configuration file to server.properties
   template:
     src: server.properties.j2
@@ -123,46 +141,6 @@
     mode: 0644
   notify:
     - Restart kafka service
-  tags:
-    - kafka_config
-
-- name: Template configuration file to connect-standalone.properties
-  template:
-    src: connect-standalone.properties.j2
-    dest: '{{ kafka_dir }}/config/connect-standalone.properties'
-    group: '{{ kafka_group }}'
-    owner: '{{ kafka_user }}'
-    mode: 0644
-  tags:
-    - kafka_config
-
-- name: Template configuration file to connect-distributed.properties
-  template:
-    src: connect-distributed.properties.j2
-    dest: '{{ kafka_dir }}/config/connect-distributed.properties'
-    group: '{{ kafka_group }}'
-    owner: '{{ kafka_user }}'
-    mode: 0644
-  tags:
-    - kafka_config
-
-- name: Template configuration file to producer.properties
-  template:
-    src: producer.properties.j2
-    dest: '{{ kafka_dir }}/config/producer.properties'
-    group: '{{ kafka_group }}'
-    owner: '{{ kafka_user }}'
-    mode: 0644
-  tags:
-    - kafka_config
-
-- name: Template configuration file to consumer.properties
-  template:
-    src: consumer.properties.j2
-    dest: '{{ kafka_dir }}/config/consumer.properties'
-    group: '{{ kafka_group }}'
-    owner: '{{ kafka_user }}'
-    mode: 0644
   tags:
     - kafka_config
 
@@ -180,46 +158,6 @@
   file:
     src: '{{ kafka_dir }}/config/kraft/server.properties'
     dest: /etc/kafka/server.properties
-    state: link
-    group: '{{ kafka_group }}'
-    owner: '{{ kafka_user }}'
-  tags:
-    - kafka_config
-
-- name: Create symlink to kafka connect standalone properties file
-  file:
-    src: '{{ kafka_dir }}/config/connect-standalone.properties'
-    dest: /etc/kafka/connect-standalone.properties
-    state: link
-    group: '{{ kafka_group }}'
-    owner: '{{ kafka_user }}'
-  tags:
-    - kafka_config
-
-- name: Create symlink to kafka connect distributed properties file
-  file:
-    src: '{{ kafka_dir }}/config/connect-distributed.properties'
-    dest: /etc/kafka/connect-distributed.properties
-    state: link
-    group: '{{ kafka_group }}'
-    owner: '{{ kafka_user }}'
-  tags:
-    - kafka_config
-
-- name: Create symlink to kafka producer properties file
-  file:
-    src: '{{ kafka_dir }}/config/producer.properties'
-    dest: /etc/kafka/producer.properties
-    state: link
-    group: '{{ kafka_group }}'
-    owner: '{{ kafka_user }}'
-  tags:
-    - kafka_config
-
-- name: Create symlink to kafka consumer properties file
-  file:
-    src: '{{ kafka_dir }}/config/consumer.properties'
-    dest: /etc/kafka/consumer.properties
     state: link
     group: '{{ kafka_group }}'
     owner: '{{ kafka_user }}'

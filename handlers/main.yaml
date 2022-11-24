@@ -2,6 +2,31 @@
 - name: Reload initd
   command: initctl reload-configuration
 
+- name: Stop kafka service
+  service:
+    name: kafka
+    state: stopped
+  listen: "Quorum cleanup"
+
+# https://github.com/strimzi/strimzi-kafka-operator/issues/6862
+- name: Quorum state files to delete
+  find:
+    paths: "{{ kafka_data_log_dirs.split(',') }}"
+    recurse: yes
+    patterns: quorum-state
+    file_type: file
+  register: quorum_state_files_to_delete
+  listen: "Quorum cleanup"
+
+- name: Deleting Quorum state files to delete
+  file:
+    path: '{{ item.path }}'
+    state: absent
+  with_items: "{{ quorum_state_files_to_delete.files }}"
+  listen: "Quorum cleanup"
+  notify:
+    - Restart kafka service
+
 - name: Restart kafka service
   service:
     name: kafka
