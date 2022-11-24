@@ -126,16 +126,6 @@
   tags:
     - kafka_config
 
-- name: Template configuration file to zookeeper.properties
-  template:
-    src: zookeeper.properties.j2
-    dest: '{{ kafka_dir }}/config/zookeeper.properties'
-    group: '{{ kafka_group }}'
-    owner: '{{ kafka_user }}'
-    mode: 0644
-  tags:
-    - kafka_config
-
 - name: Template configuration file to connect-standalone.properties
   template:
     src: connect-standalone.properties.j2

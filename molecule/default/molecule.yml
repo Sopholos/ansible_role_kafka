@@ -31,7 +31,6 @@ platforms:
     command: /lib/systemd/systemd
     groups:
       - kafka-nodes
-      - zookeeper-nodes
   - name: server-2
     image: centos:7
     networks:
@@ -48,7 +47,6 @@ platforms:
       - SYS_ADMIN
     groups:
       - kafka-nodes
-      - zookeeper-nodes
   - name: server-3
     image: registry.access.redhat.com/ubi8/ubi-init
     networks:
@@ -67,25 +65,20 @@ platforms:
       - SYS_ADMIN
     groups:
       - kafka-nodes
-      - zookeeper-nodes
 provisioner:
   name: ansible
   inventory:
     group_vars:
-      kafka_zookeeper_connect: 'server-1:2181,server-2:2181,server-3:2181/kafka'
       kafka_bootstrap_servers: 'server-1:9092,server-2:9092,server-3:9092'
     host_vars:
       server-1:
-        zookeeper_id: 1
         kafka_broker_id: 0
         kafka_listener_hostname: server-1
       server-2:
-        zookeeper_id: 2
         kafka_broker_id: 1
         kafka_listener_hostname: server-2
         kafka_download_validate_certs: no
       server-3:
-        zookeeper_id: 3
         kafka_broker_id: 2
         kafka_listener_hostname: server-3
 lint: |
