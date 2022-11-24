@@ -3,7 +3,7 @@
 # kafka_download_base_url should be set to https://archive.apache.org/dist/kafka/ for older versions than the current
 kafka_download_base_url: https://downloads.apache.org/kafka
 kafka_download_validate_certs: yes
-kafka_version: 3.2.3
+kafka_version: 3.3.1
 kafka_scala_version: 2.13
 
 # The kafka user and group to create files/dirs with and for running the kafka service
@@ -28,7 +28,7 @@ kafka_restart: yes
 kafka_broker_id: 0
 
 # The Java heap size (memory) allocation (xmx, xms)
-kafka_java_heap: "-Xms1G -Xmx1G"
+kafka_java_heap: "-Xms50M -Xmx400M"
 
 # The number of threads to use for various background processing tasks
 kafka_background_threads: 10
@@ -110,26 +110,7 @@ kafka_default_replication_factor: 1
 
 kafka_group_initial_rebalance_delay_ms: 0
 
-############################# Zookeeper #############################
-
-# Zookeeper connection string (see zookeeper docs for details).
-# This is a comma separated host:port pairs, each corresponding to a zk
-# server. e.g. "127.0.0.1:3000,127.0.0.1:3001,127.0.0.1:3002".
-# You can also append an optional chroot string to the urls to specify the
-# root directory for all kafka znodes.
-kafka_zookeeper_connect: "localhost:2181"
-
-# the directory where the snapshot is stored.
-kafka_zookeeper_data_dir: /tmp/zookeeper
-# the port at which the clients will connect
-kafka_zookeeper_client_port: 2181
-# disable the per-ip limit on the number of connections since this is a non-production config
-kafka_zookeeper_max_client_cnxns: 0
-
 ############################# Timeout #############################
-
-# Timeout in ms for connecting to zookeeper
-kafka_zookeeper_connection_timeout_ms: 6000
 
 # Offset commit will be delayed until all replicas for the offsets topic receive the commit or this timeout is reached. This is similar to the producer request timeout.
 kafka_offsets_commit_timeout_ms: 5000

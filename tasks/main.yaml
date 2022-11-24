@@ -117,22 +117,12 @@
 - name: Template configuration file to server.properties
   template:
     src: server.properties.j2
-    dest: '{{ kafka_dir }}/config/server.properties'
+    dest: '{{ kafka_dir }}/config/kraft/server.properties'
     group: '{{ kafka_group }}'
     owner: '{{ kafka_user }}'
     mode: 0644
   notify:
     - Restart kafka service
-  tags:
-    - kafka_config
-
-- name: Template configuration file to zookeeper.properties
-  template:
-    src: zookeeper.properties.j2
-    dest: '{{ kafka_dir }}/config/zookeeper.properties'
-    group: '{{ kafka_group }}'
-    owner: '{{ kafka_user }}'
-    mode: 0644
   tags:
     - kafka_config
 
@@ -188,7 +178,7 @@
 
 - name: Create symlink to kafka server properties file
   file:
-    src: '{{ kafka_dir }}/config/server.properties'
+    src: '{{ kafka_dir }}/config/kraft/server.properties'
     dest: /etc/kafka/server.properties
     state: link
     group: '{{ kafka_group }}'
@@ -245,6 +235,15 @@
     owner: '{{ kafka_user }}'
   tags:
     - kafka_config
+
+- name: check if kraft logs dir has been initialized
+  shell: "{{ kafka_dir }}/bin/kafka-storage.sh info -c {{ kafka_dir }}/config/kraft/server.properties"
+  register: storage_init
+  ignore_errors: yes
+
+- name: init kraft logs dir
+  shell: "{{ kafka_dir }}/bin/kafka-storage.sh format -t {{ kafka_cluster_id }} -c {{ kafka_dir }}/config/kraft/server.properties"
+  when: '"is not formatted" in storage_init.stdout'
 
 - name: Template Kafka init.d service file
   template:
