@@ -120,6 +120,18 @@
   tags:
     - kafka_dirs
 
+- name: Template file to detect scale up/down
+  template:
+    src: controller.quorum.voters.j2
+    dest: '{{ kafka_dir }}/config/kraft/controller.quorum.voters'
+    group: '{{ kafka_group }}'
+    owner: '{{ kafka_user }}'
+    mode: 0644
+  notify:
+    - Quorum cleanup
+  tags:
+    - kafka_config
+
 - name: Template configuration file to server.properties
   template:
     src: server.properties.j2
