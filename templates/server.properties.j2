@@ -23,7 +23,7 @@
 ############################# Server Basics #############################
 
 # The id of the broker. This must be set to a unique integer for each broker.
-#broker.id={{ kafka_broker_id }}
+broker.id={{ kafka_node_id }}
 
 # The role of this server. Setting this puts us in KRaft mode
 process.roles=broker,controller
@@ -57,9 +57,9 @@ background.threads={{ kafka_background_threads }}
 #     listeners = listener_name://host_name:port
 #   EXAMPLE:
 #     listeners = PLAINTEXT://your.host.name:9092
-#listeners=PLAINTEXT://:9092,CONTROLLER://:9093
-inter.broker.listener.name=PLAINTEXT
-#listeners=PLAINTEXT://:9092
+{% if kafka_inter_broker_listener_name is defined %}
+inter.broker.listener.name={{ kafka_inter_broker_listener_name }}
+{% endif %}
 listeners={{ kafka_listeners | join(",")}}
 
 # Listener, host name, and port for the controller to advertise to the brokers. If
@@ -68,13 +68,12 @@ controller.listener.names=CONTROLLER
 
 # Listener name, hostname and port the broker will advertise to clients.
 # If not set, it uses the value for "listeners".
-#advertised.listeners=PLAINTEXT://your.host.name:9092
 {% if kafka_advertised_listeners is defined %}
 advertised.listeners={{ kafka_advertised_listeners | join(",")}}
 {% endif %}
 
 # Maps listener names to security protocols, the default is for them to be the same. See the config documentation for more details
-listener.security.protocol.map=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,SSL:SSL,SASL_PLAINTEXT:SASL_PLAINTEXT,SASL_SSL:SASL_SSL
+listener.security.protocol.map={{ kafka_listener_security_protocol_map }}
 
 # The number of threads that the server uses for receiving requests from the network and sending responses to the network
 num.network.threads={{ kafka_num_network_threads }}
@@ -180,15 +179,26 @@ group.initial.rebalance.delay.ms={{ kafka_group_initial_rebalance_delay_ms }}
 {% if kafka_listener_auth is defined %}
 ############################# AUTHENTICATION #############################
   {% for type in kafka_listener_auth %}
-    {{ type.name }} required \
-  {% for user in type.users %}
-    user_{{ user.user }}="{{ user.pass }}" \
-  {% endfor %}
-    username="{{ type.username }}" \
-    password="{{ type.password }}";
+{{ type.name }} required \
+  {% if type.users is defined %}
+    {% for user in type.users %}
+  user_{{ user.login }}="{{ user.password }}" \
+    {% endfor %}
+  {% endif %}
+  username="{{ type.username }}" \
+  password="{{ type.password }}";
   {% endfor %}
 {% endif %}
 
+{% if kafka_sasl_mechanism_inter_broker_protocol is defined %}
+sasl.mechanism.inter.broker.protocol={{ kafka_sasl_mechanism_inter_broker_protocol }}
+{% endif %}
+{% if kafka_security_inter_broker_protocol is defined %}
+security.inter.broker.protocol={{ kafka_security_inter_broker_protocol }}
+{% endif %}
+{% if kafka_security_protocol is defined %}
+security.protocol={{ kafka_security_protocol }}
+{% endif %}
 {% if kafka_sasl_enabled_mechanisms is defined %}
 sasl.enabled.mechanisms={{ kafka_sasl_enabled_mechanisms }}
 {% endif %}
