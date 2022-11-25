@@ -1,0 +1,6 @@
+KafkaServer {
+      org.apache.kafka.common.security.plain.PlainLoginModule required
+      serviceName="kafka"
+      username="{{ kafka_interbroker.login }}"
+      password="{{ kafka_interbroker.password }}";
+};

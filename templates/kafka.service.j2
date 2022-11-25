@@ -8,6 +8,7 @@ After=network.target
 Type=simple
 StandardOutput=null
 Environment="KAFKA_HEAP_OPTS={{ kafka_java_heap }}"
+Environment="KAFKA_OPTS=-Djava.security.auth.login.config=/etc/kafka/kafka_server_jaas.conf"
 Environment="LOG_DIR={{ kafka_log_dir }}"
 {% if kafka_jmx_port is defined %}
 Environment="JMX_PORT={{ kafka_jmx_port }}"

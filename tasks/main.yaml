@@ -144,6 +144,18 @@
   tags:
     - kafka_config
 
+- name: Template configuration file to kafka_server_jaas.conf
+  template:
+    src: kafka_server_jaas.conf.j2
+    dest: '{{ kafka_dir }}/config/kraft/kafka_server_jaas.conf'
+    group: '{{ kafka_group }}'
+    owner: '{{ kafka_user }}'
+    mode: 0644
+  notify:
+    - Restart kafka service
+  tags:
+    - kafka_config
+
 - name: Template configuration file to log4j.properties
   template:
     src: log4j.properties.j2
@@ -158,6 +170,16 @@
   file:
     src: '{{ kafka_dir }}/config/kraft/server.properties'
     dest: /etc/kafka/server.properties
+    state: link
+    group: '{{ kafka_group }}'
+    owner: '{{ kafka_user }}'
+  tags:
+    - kafka_config
+
+- name: Create symlink to kafka server jaas conf file
+  file:
+    src: '{{ kafka_dir }}/config/kraft/kafka_server_jaas.conf'
+    dest: /etc/kafka/kafka_server_jaas.conf
     state: link
     group: '{{ kafka_group }}'
     owner: '{{ kafka_user }}'
