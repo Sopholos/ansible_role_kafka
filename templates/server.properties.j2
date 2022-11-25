@@ -180,15 +180,19 @@ group.initial.rebalance.delay.ms={{ kafka_group_initial_rebalance_delay_ms }}
 {% if kafka_listener_auth is defined %}
 ############################# AUTHENTICATION #############################
   {% for type in kafka_listener_auth %}
-    {{ type.name }} required \
+{{ type.name }} required \
   {% for user in type.users %}
-    user_{{ user.user }}="{{ user.pass }}" \
+  user_{{ user.login }}="{{ user.password }}" \
   {% endfor %}
-    username="{{ type.username }}" \
-    password="{{ type.password }}";
+  username="{{ type.username }}" \
+  password="{{ type.password }}";
   {% endfor %}
 {% endif %}
 
+#sasl.mechanism.inter.broker.protocol=PLAIN
+{% if kafka_security_protocol is defined %}
+security.protocol={{ kafka_security_protocol }}
+{% endif %}
 {% if kafka_sasl_enabled_mechanisms is defined %}
 sasl.enabled.mechanisms={{ kafka_sasl_enabled_mechanisms }}
 {% endif %}
