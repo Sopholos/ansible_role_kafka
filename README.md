@@ -1,5 +1,8 @@
 # Apache Kafka
 
+Refactored kafka role to use KRaft-mode
+Apache Kafka KRaft ansible role
+
 ![Lint Code Base] ![Molecule]
 
 Ansible role to install and configure [Apache Kafka] 3.2.3
