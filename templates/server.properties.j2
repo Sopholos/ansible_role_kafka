@@ -22,6 +22,13 @@
 
 ############################# Server Basics #############################
 
+{% if kafka_inter_broker_protocol_version is defined %}
+inter.broker.protocol.version={{ kafka_inter_broker_protocol_version }}
+{% endif %}
+{% if kafka_log_message_format_version is defined %}
+log.message.format.version={{ kafka_log_message_format_version }}
+{% endif %}
+
 # The id of the broker. This must be set to a unique integer for each broker.
 broker.id={{ kafka_node_id }}
 
