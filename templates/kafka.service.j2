@@ -11,6 +11,7 @@ Environment="KAFKA_HEAP_OPTS={{ kafka_java_heap }}"
 Environment="LOG_DIR={{ kafka_log_dir }}"
 {% if kafka_jmx_port is defined %}
 Environment="JMX_PORT={{ kafka_jmx_port }}"
+Environment="KAFKA_JMX_OPTS=-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.rmi.port={{ kafka_jmx_port }}"
 {% endif %}
 ExecStart={{ kafka_dir }}/bin/kafka-server-start.sh /etc/kafka/server.properties
 ExecStop={{ kafka_dir }}/bin/kafka-server-stop.sh
