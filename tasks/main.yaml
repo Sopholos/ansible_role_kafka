@@ -120,6 +120,17 @@
   tags:
     - kafka_dirs
 
+- name: Create kraft configuration directory
+  file:
+    path: '{{ kafka_dir }}/config/kraft'
+    state: directory
+    group: '{{ kafka_group }}'
+    owner: '{{ kafka_user }}'
+    mode: 0755
+  tags:
+    - kafka_dirs
+    - kafka_config
+
 - name: Template file to detect scale up/down
   template:
     src: controller.quorum.voters.j2
